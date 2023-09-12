@@ -7,6 +7,7 @@
   <script src="https://cdn.tailwindcss.com"></script>
   <script src="https://cdnjs.cloudflare.com/ajax/libs/Sortable/1.15.0/Sortable.min.js"></script>
   <script src="https://cdnjs.cloudflare.com/ajax/libs/html2canvas/1.4.1/html2canvas.min.js"></script>
+  <script src="https://cdnjs.cloudflare.com/ajax/libs/jscolor/2.5.1/jscolor.min.js"></script>
   <style type="text/tailwindcss">
     @layer base {
         img {
@@ -48,52 +49,50 @@
       createTier(tier[0], tier[1])
     }
 
-    // Function to change colors of tiers
-    function changeTierColor(contBox, newColor) {
-      contBox.className = contBox.className.replace(/bg-\[(.+?)\]/g, "bg-[" + newColor + "]");
-    }
-
+    // Create a function to create tiers
     function createTier(tierName = "New Tier", tierColor = "#000000") {
       // Create a box to put elements into
       var box = document.createElement("div");
-      box.className = "flex flex-row border-2 rounded-lg border-zinc-800 bg-[" + tierColor + "]";
+      box.className = "relative flex flex-row border-2 rounded-lg border-zinc-800";
       box.id = generateID("box-id-")
 
       // Create a header element for the tier name
       var header = document.createElement("div");
-      header.className = "relative flex rounded-l-md w-[120px] shadow-[inset_0px_0px_1px_1px_rgba(0,0,0,0.25);]";
+      header.className = "flex flex-none rounded-l-md lg:w-[120px] md:w-[90px] w-[60px] shadow-[inset_0px_0px_1px_1px_rgba(0,0,0,0.25);]";
 
       var headerText = document.createElement("p");
       headerText.textContent = tierName
-      headerText.className = "flex grow text-center items-center justify-center font-bold"
+      headerText.className = "lg:text-base md:text-sm text-xs flex lg:w-[120px] md:w-[90px] w-[60px] text-center items-center justify-center"
       headerText.contentEditable = "True";
       header.append(headerText)
 
       // Create box where items can be dragged
       var list = document.createElement("div");
-      list.className = "flex flex-row grow flex-wrap content-start min-h-[120px] bg-[#0000003f] shadow-[inset_0px_0px_1px_1px_rgba(0,0,0,0.25);]  rounded-r-md";
+      list.className = "flex flex-row grow flex-wrap content-start lg:min-h-[120px] md:min-h-[90px] min-h-[60px] bg-[#0000003f] shadow-[inset_0px_0px_1px_1px_rgba(0,0,0,0.25);]  rounded-r-md";
 
       // Create a handle
-      var handle = document.createElement("div");
-      handle.className = "z-10 handle h-full absolute items-center justify-center cursor-move flex";
+      var handle = document.createElement("i");
+      handle.className = "z-20 right-0 handle h-full lg:w-5 md:w-4 w-3 absolute items-center justify-center cursor-move flex";
       handle.innerHTML = `
-        <svg viewBox="0 0 60 120" class="h-6 w-4">
+        <svg viewBox="0 0 60 120">
           <path d="M 10 90 L 30 110 L 50 90 Z" stroke-width="5" stroke-linejoin="round" style="stroke:black; fill:black"></path>
           <path d="M 10 30 L 30 10 L 50 30 Z" stroke-width="5" stroke-linejoin="round" style="stroke:black; fill:black"></path>
           <circle cx="30" cy="60" r="12" style="stroke:black; fill:black"></circle>
         </svg>`;
-      header.append(handle);
+      box.append(handle);
 
-      // Create a settings cogwheel
+      // Create a color picker
       var cogwheel = document.createElement("div");
-      cogwheel.className = "right-0 bottom-0 absolute h-[24px] w-[24px] flex";
-      cogwheel.innerHTML = `
-        <svg viewBox="0 0 120 120" class="h-6 w-6">
-          <line x1="60" y1="40" x2="60" y2="80" transform="rotate(0,60,60)" stroke-linecap="round" style="stroke:black;stroke-width:15"/>
-          <line x1="60" y1="40" x2="60" y2="80" transform="rotate(60,60,60)" stroke-linecap="round" style="stroke:black;stroke-width:15"/>
-          <line x1="60" y1="40" x2="60" y2="80" transform="rotate(120,60,60)" stroke-linecap="round" style="stroke:black;stroke-width:15"/>
-        </svg>`;
-      header.append(cogwheel);
+      box.append(cogwheel);
+      cogwheel.outerHTML = `
+        <div class="z-30 right-0 bottom-0 absolute lg:h-5 md:h-4 h-3 lg:w-5 md:w-4 w-3 flex" data-jscolor="{previewElement:'#`+box.id+`',format: 'rgb',value:'`+tierColor+`'}">
+          <svg class="pointer-events-none" viewBox="0 0 120 120">
+            <line x1="60" y1="30" x2="60" y2="90" transform="rotate(0,60,60)" stroke-linecap="round" style="stroke:black;stroke-width:18"/>
+            <line x1="60" y1="30" x2="60" y2="90" transform="rotate(60,60,60)" stroke-linecap="round" style="stroke:black;stroke-width:18"/>
+            <line x1="60" y1="30" x2="60" y2="90" transform="rotate(120,60,60)" stroke-linecap="round" style="stroke:black;stroke-width:18"/>
+          </svg>
+        </div>
+        `;
 
       // Append elements to the container
       box.append(header);
@@ -114,11 +113,8 @@
       direction: "horizontal",
     });
 
-    // changeTierColor(document.getElementById("box-id-0"), "#ff0000")
-
     var champs = document.createElement("div");
     champs.className = "flex flex-row grow flex-wrap content-start justify-center min-h-[128px]";
-
 
     fetch('https://ddragon.leagueoflegends.com/api/versions.json')
       .then((res) => res.json())
@@ -129,10 +125,9 @@
           .then((data) => {
             for (champ of (Object.keys(data.data).map((key) => data.data[key].id))) {
               var item = document.createElement("img");
-              item.className = "flex z-10 cursor-move";
-              item.src = "http://ddragon.leagueoflegends.com/cdn/13.16.1/img/champion/" + champ + ".png"
-              champs.append(item);
-              console.log(champ)
+              item.className = "flex lg:max-w-[160px] md:max-w-[90px] max-w-[60px] z-10 cursor-move";
+              item.src = "https://ddragon.leagueoflegends.com/cdn/" + version + "/img/champion/" + champ + ".png"
+              //champs.append(item);
             }
           });
       })
@@ -144,20 +139,6 @@
     });
 
   </script>
-
-
-
-
-
-
-
-
-
-
-
-
-
-
 
 </body>
 
