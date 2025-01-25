@@ -58,17 +58,17 @@
 
       // Create a header element for the tier name
       var header = document.createElement("div");
-      header.className = "flex flex-none rounded-l-md lg:w-[120px] md:w-[90px] w-[60px] shadow-[inset_0px_0px_1px_1px_rgba(0,0,0,0.25);]";
+      header.className = "flex flex-none rounded-l-md lg:w-[128px] md:w-[96px] w-[64px] shadow-[inset_0px_0px_1px_1px_rgba(0,0,0,0.25);]";
 
       var headerText = document.createElement("p");
       headerText.textContent = tierName
-      headerText.className = "lg:text-base md:text-sm text-xs flex lg:w-[120px] md:w-[90px] w-[60px] text-center items-center justify-center"
+      headerText.className = "lg:text-base md:text-sm text-xs flex lg:w-[128px] md:w-[96px] w-[64px] text-center items-center justify-center"
       headerText.contentEditable = "True";
       header.append(headerText)
 
       // Create box where items can be dragged
       var list = document.createElement("div");
-      list.className = "flex flex-row grow flex-wrap content-start lg:min-h-[120px] md:min-h-[90px] min-h-[60px] bg-[#0000003f] shadow-[inset_0px_0px_1px_1px_rgba(0,0,0,0.25);]  rounded-r-md";
+      list.className = "flex flex-row grow flex-wrap content-start lg:min-h-[128px] md:min-h-[96px] min-h-[64px] bg-[#0000003f] shadow-[inset_0px_0px_1px_1px_rgba(0,0,0,0.25);]  rounded-r-md";
 
       // Create a handle
       var handle = document.createElement("i");
@@ -125,7 +125,7 @@
           .then((data) => {
             for (champ of (Object.keys(data.data).map((key) => data.data[key].id))) {
               var item = document.createElement("img");
-              item.className = "flex lg:max-w-[160px] md:max-w-[90px] max-w-[60px] z-10 cursor-move";
+              item.className = "flex lg:max-w-[128px] md:max-w-[96px] max-w-[64px] z-10 cursor-move";
               item.src = "https://ddragon.leagueoflegends.com/cdn/" + version + "/img/champion/" + champ + ".png"
               champs.append(item);
             }
