@@ -5,7 +5,7 @@
     <meta name="viewport" content="width=device-width, initial-scale=1.0" />
     <script src="https://unpkg.com/@tailwindcss/browser@4"></script>
     <script src="https://cdnjs.cloudflare.com/ajax/libs/Sortable/1.15.0/Sortable.min.js"></script>
-    <script src="https://cdnjs.cloudflare.com/ajax/libs/html2canvas/1.4.1/html2canvas.min.js"></script>
+    <script src=" https://cdn.jsdelivr.net/npm/html2canvas-pro@1.5.8/dist/html2canvas-pro.min.js"></script>
     <script src="https://cdnjs.cloudflare.com/ajax/libs/jscolor/2.5.2/jscolor.min.js"></script>
     <link rel="preconnect" href="https://fonts.googleapis.com" />
     <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
@@ -25,12 +25,25 @@
     </style>
   </head>
 
-  <body id="body" class="p-8 flex h-screen flex-col dark:bg-gray-800">
-    <div id="tier-list"></div>
-    <div id="add-tier"></div>
+  <body class="flex h-max flex-col p-4 dark:bg-gray-800">
+    <div id="tier-list" class="bg-gray-900 p-2"></div>
+    <div class="flex flex-row px-[10%]">
+      <div
+        id="add-tier"
+        class="m-1 flex-auto cursor-pointer content-center border-[0.25rem] border-gray-900 bg-gray-600 text-center text-[16px] md:text-[24px] lg:text-[32px]"
+      >
+        +
+      </div>
+      <div
+        id="screenshot"
+        class="m-1 flex-auto cursor-pointer content-center border-[0.25rem] border-gray-900 bg-gray-600 text-center text-[16px] md:text-[24px] lg:text-[32px]"
+      >
+        [◉°]
+      </div>
+    </div>
     <div
       id="item-list"
-      class="flex min-h-[64px] grow flex-wrap justify-center md:min-h-[96px] lg:min-h-[128px]"
+      class="flex min-h-[64px] flex-wrap justify-center bg-gray-900 p-2 md:min-h-[96px] lg:min-h-[128px]"
     ></div>
 
     <script>
@@ -39,15 +52,15 @@
       }
 
       // Create a global ID counter so every element has unique ID
-      var generateID = (function () {
-        var globalIdCounter = 0;
+      let generateID = (function () {
+        let globalIdCounter = 0;
         return function (baseStr) {
           return baseStr + globalIdCounter++;
         };
       })();
 
       // Create an array of pre-made tiers to be sorted
-      var tiers = [
+      let tiers = [
         ["S", "#BF7FFF"],
         ["A", "#00BFFF"],
         ["B", "#7FFF3F"],
@@ -56,8 +69,8 @@
       ];
 
       // Get the container element for the tier list
-      var container = document.getElementById("tier-list");
-      var itemContainer = document.getElementById("item-list");
+      let container = document.getElementById("tier-list");
+      let itemContainer = document.getElementById("item-list");
 
       // Create the pre-made tiers from the array
       for (tier of tiers) {
@@ -67,56 +80,57 @@
       // Create a function to create tiers
       function createTier(tierName = "New Tier", tierColor = "#d0d0ff") {
         // Create a box to put elements into
-        var box = document.createElement("div");
+        let box = document.createElement("div");
         container.append(box);
-        box.className = "relative flex flex-row";
+        box.className = "group relative flex flex-row";
         box.id = generateID("box-id-");
 
         // Create a header element for the tier name
-        var header = document.createElement("div");
-        header.className = "m-0.5 flex flex-none lg:w-[128px] md:w-[96px] w-[64px]]";
+        let header = document.createElement("div");
+        header.className =
+          "m-0.5 flex flex-none lg:w-[128px] md:w-[96px] w-[64px]";
         box.append(header);
 
-        var headerText = document.createElement("div");
+        let headerText = document.createElement("div");
+        header.append(headerText);
         headerText.textContent = tierName;
         headerText.className =
-          "lg:text-2xl md:text-lg text-xs flex grow text-center items-center justify-center";
+          "lg:text-2xl md:text-lg text-xs max-w-[64px] md:max-w-[96px] lg:max-w-[128px] flex grow text-center items-center justify-center";
         headerText.contentEditable = "True";
-        header.append(headerText);
 
         // Create box where items can be dragged
-        var list = document.createElement("div");
+        let list = document.createElement("div");
         box.append(list);
         list.className =
           "m-0.5 flex flex-row grow flex-wrap content-start lg:min-h-[128px] md:min-h-[96px] min-h-[64px] bg-[#0000003f]";
 
         // Create a handle
-        var handle = document.createElement("div");
+        let handle = document.createElement("div");
+        header.append(handle);
         handle.textContent = "⥮";
         handle.className =
-          "opacity-0 hover:opacity-100 text-[16px] md:text-[24px] lg:text-[32px] text-center z-20 left-0 handle h-full lg:w-6 md:w-4.5 w-3 absolute items-center justify-center cursor-row-resize flex";
-        box.append(handle);
+          "opacity-0 group-hover:opacity-100 text-[16px] md:text-[24px] lg:text-[32px] text-center z-20 top-0 h-full lg:w-6 md:w-4.5 w-3 absolute items-center justify-center cursor-row-resize flex";
 
         // Create a remove button
-        var remove = document.createElement("div");
+        let remove = document.createElement("div");
         handle.append(remove);
         remove.textContent = "-";
         remove.className =
-          "cursor-pointer select-none flex text-[16px] md:text-[24px] lg:text-[32px] items-center justify-center z-30 left-0 bottom-0 absolute lg:max-h-6 md:max-h-4.5 max-h-3 lg:w-6 md:w-4.5 w-3";
+          "cursor-pointer select-none flex text-[16px] md:text-[24px] lg:text-[32px] items-center justify-center z-30 bottom-0 absolute lg:max-h-6 md:max-h-4.5 max-h-3 lg:w-6 md:w-4.5 w-3";
 
-        remove.onclick = function(){
-          while(list.hasChildNodes()){
+        remove.onclick = function () {
+          while (list.hasChildNodes()) {
             itemContainer.append(list.firstChild);
           }
           box.remove();
-        }
-        
+        };
+
         // Create a color picker
-        var cogwheel = document.createElement("div");
+        let cogwheel = document.createElement("div");
         handle.append(cogwheel);
         cogwheel.textContent = "✱";
         cogwheel.className =
-          "cursor-pointer select-none flex text-[10px] md:text-[15px] lg:text-[20px] justify-center z-30 left-0 top-0 absolute lg:max-h-6 md:max-h-4.5 max-h-3 lg:w-6 md:w-4.5 w-3";
+          "cursor-pointer select-none flex text-[10px] md:text-[15px] lg:text-[20px] justify-center z-30 top-0 absolute lg:max-h-6 md:max-h-4.5 max-h-3 lg:w-6 md:w-4.5 w-3";
 
         let opts = {
           backgroundColor: "#333",
@@ -133,19 +147,28 @@
         return box;
       }
 
-      var addButton = document.getElementById("add-tier");
-      addButton.textContent = "+";
-      addButton.className =
-        "mx-[25%] my-2 text-[16px] md:text-[24px] lg:text-[32px] cursor-cell select-none justify-center items-center bg-gray-600 flex";
+      let addButton = document.getElementById("add-tier");
       addButton.onclick = function () {
         createTier();
+      };
+
+      let copyTier = document.getElementById("screenshot");
+      copyTier.onclick = function () {
+        html2canvas(document.getElementById("tier-list")).then(
+          function (canvas) {
+            canvas.toBlob((blob) =>
+              navigator.clipboard.write([
+                new ClipboardItem({ "image/png": blob }),
+              ]),
+            );
+          },
+        );
       };
 
       // Make the tiers sortable using SortableJS
       Sortable.create(container, {
         animation: 150,
         group: "tier",
-        handle: ".handle",
         direction: "horizontal",
       });
 
@@ -163,15 +186,16 @@
               for (champ of Object.keys(data.data).map(
                 (key) => data.data[key].id,
               )) {
-                var item = document.createElement("img");
+                let item = document.createElement("img");
                 item.className =
                   "flex lg:max-w-[128px] md:max-w-[96px] max-w-[64px] z-10 cursor-move";
-                item.src =
+                let tempurl =
                   "https://ddragon.leagueoflegends.com/cdn/" +
                   version +
                   "/img/champion/" +
                   champ +
                   ".png";
+                displayBlobImage(tempurl, item);
                 itemContainer.append(item);
               }
             });
@@ -181,6 +205,17 @@
         animation: 150,
         group: "item",
       });
+
+      async function fetchImage(url) {
+        const response = await fetch(url);
+        const blob = await response.blob();
+        return blob;
+      }
+      async function displayBlobImage(url, imgElement) {
+        const imageBlob = await fetchImage(url);
+        const imageObjectURL = URL.createObjectURL(imageBlob);
+        imgElement.src = imageObjectURL;
+      }
     </script>
   </body>
 </html>
