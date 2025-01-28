@@ -1,151 +1,186 @@
 <!doctype html>
 <html>
-
-<head>
-  <meta charset="UTF-8" />
-  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-  <script src="https://cdn.tailwindcss.com"></script>
-  <script src="https://cdnjs.cloudflare.com/ajax/libs/Sortable/1.15.0/Sortable.min.js"></script>
-  <script src="https://cdnjs.cloudflare.com/ajax/libs/html2canvas/1.4.1/html2canvas.min.js"></script>
-  <script src="https://cdnjs.cloudflare.com/ajax/libs/jscolor/2.5.1/jscolor.min.js"></script>
-  <link rel="preconnect" href="https://fonts.googleapis.com">
-  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
-  <link href="https://fonts.googleapis.com/css2?family=Gabarito:wght@400..900&family=Zain:ital,wght@0,200;0,300;0,400;0,700;0,800;0,900;1,300;1,400&display=swap" rel="stylesheet">
-  <style type="text/tailwindcss">
-    @layer base {
-      img {
-        @apply inline-block;
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <script src="https://unpkg.com/@tailwindcss/browser@4"></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/Sortable/1.15.0/Sortable.min.js"></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/html2canvas/1.4.1/html2canvas.min.js"></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/jscolor/2.5.2/jscolor.min.js"></script>
+    <link rel="preconnect" href="https://fonts.googleapis.com" />
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+    <link
+      href="https://fonts.googleapis.com/css2?family=Gabarito:wght@400..900&family=Zain:ital,wght@0,200;0,300;0,400;0,700;0,800;0,900;1,300;1,400&display=swap"
+      rel="stylesheet"
+    />
+    <style type="text/css">
+      @layer base {
+        img {
+          @apply inline-block;
+        }
+        body {
+          font-family: Gabarito;
+        }
       }
-      body {
-        font-family: Gabarito;
+    </style>
+  </head>
+
+  <body id="body" class="flex h-screen flex-col dark:bg-gray-800">
+    <div id="tier-list"></div>
+    <div id="add-tier"></div>
+    <div
+      id="item-list"
+      class="flex min-h-16 grow flex-wrap justify-center md:min-h-[128px] lg:min-h-32"
+    ></div>
+
+    <script>
+      function setWidth(thediv, size) {
+        thediv.style.width = Math.floor(window.innerWidth / size) * size + "px";
       }
-    }
-  </style>
 
-</head>
+      // Create a global ID counter so every element has unique ID
+      var generateID = (function () {
+        var globalIdCounter = 0;
+        return function (baseStr) {
+          return baseStr + globalIdCounter++;
+        };
+      })();
 
-<body class="dark:bg-slate-900">
-  <div id="tier-list" class="rounded-xl bg-zinc-800 m-2 p-1"></div>
-  <div id="item-list" class="border-4 border-zinc-800 rounded-xl bg-zinc-700 m-2 p-1"></div>
+      // Create an array of pre-made tiers to be sorted
+      var tiers = [
+        ["S", "#BF7FFF"],
+        ["A", "#00BFFF"],
+        ["B", "#7FFF3F"],
+        ["C", "#FFFF3F"],
+        ["D", "#FF4F4F"],
+      ];
 
-  <script>
-    // Create a global ID counter so every element has unique ID
-    var generateID = (function () {
-      var globalIdCounter = 0;
-      return function (baseStr) {
-        return (baseStr + globalIdCounter++);
+      // Get the container element for the tier list
+      var container = document.getElementById("tier-list");
+      var itemContainer = document.getElementById("item-list");
+
+      // Create the pre-made tiers from the array
+      for (tier of tiers) {
+        createTier(tier[0], tier[1]);
       }
-    })();
 
-    // Create an array of pre-made tiers to be sorted
-    var tiers = [
-      ["S", "#BF7FFF"],
-      ["A", "#00BFFF"],
-      ["B", "#7FFF3F"],
-      ["C", "#FFFF3F"],
-      ["D", "#FF4F4F"],
-    ];
+      // Create a function to create tiers
+      function createTier(tierName = "New Tier", tierColor = "#d0d0ff") {
+        // Create a box to put elements into
+        var box = document.createElement("div");
+        container.append(box);
+        box.className = "relative flex flex-row";
+        box.id = generateID("box-id-");
 
-    // Get the container element for the tier list
-    var container = document.getElementById("tier-list");
-    var itemContainer = document.getElementById("item-list");
+        // Create a header element for the tier name
+        var header = document.createElement("div");
+        header.className = "flex flex-none lg:w-[128px] md:w-[96px] w-[64px]]";
+        box.append(header);
 
-    // Create the pre-made tiers from the array
-    for (tier of tiers) {
-      createTier(tier[0], tier[1])
-    }
+        var headerText = document.createElement("div");
+        headerText.textContent = tierName;
+        headerText.className =
+          "lg:text-2xl md:text-lg text-xs flex lg:w-[128px] md:w-[96px] w-[64px] text-center items-center justify-center";
+        headerText.contentEditable = "True";
+        header.append(headerText);
 
-    // Create a function to create tiers
-    function createTier(tierName = "New Tier", tierColor = "#000000") {
-      // Create a box to put elements into
-      var box = document.createElement("div");
-      box.className = "relative flex flex-row border-2 rounded-lg border-zinc-800";
-      box.id = generateID("box-id-")
+        // Create box where items can be dragged
+        var list = document.createElement("div");
+        box.append(list);
+        list.className =
+          "flex flex-row grow flex-wrap content-start lg:min-h-[128px] md:min-h-[96px] min-h-[64px] bg-[#0000003f]";
 
-      // Create a header element for the tier name
-      var header = document.createElement("div");
-      header.className = "flex flex-none rounded-l-md lg:w-[128px] md:w-[96px] w-[64px] shadow-[inset_0px_0px_1px_1px_rgba(0,0,0,0.25);]";
+        // Create a handle
+        var handle = document.createElement("div");
+        handle.textContent = "🢁\n🢃";
+        handle.className =
+          "text-[10px] md:text-[15px] lg:text-[20px] text-center z-20 left-0 handle h-full lg:w-6 md:w-4.5 w-3 absolute items-center justify-center cursor-move flex";
+        box.append(handle);
 
-      var headerText = document.createElement("p");
-      headerText.textContent = tierName
-      headerText.className = "lg:text-base md:text-sm text-xs flex lg:w-[128px] md:w-[96px] w-[64px] text-center items-center justify-center"
-      headerText.contentEditable = "True";
-      header.append(headerText)
+        // Create a remove button
+        var remove = document.createElement("div");
+        box.append(remove);
+        remove.textContent = "-";
+        remove.className =
+          "cursor-not-allowed select-none flex text-[16px] md:text-[24px] lg:text-[32px] items-center justify-center z-30 left-0 bottom-0 absolute lg:max-h-6 md:max-h-4.5 max-h-3 lg:w-6 md:w-4.5 w-3";
 
-      // Create box where items can be dragged
-      var list = document.createElement("div");
-      list.className = "flex flex-row grow flex-wrap content-start lg:min-h-[128px] md:min-h-[96px] min-h-[64px] bg-[#0000003f] shadow-[inset_0px_0px_1px_1px_rgba(0,0,0,0.25);]  rounded-r-md";
+        remove.onclick = function(){
+          while(list.hasChildNodes()){
+            itemContainer.append(list.firstChild);
+          }
+          box.remove();
+        }
+        
+        // Create a color picker
+        var cogwheel = document.createElement("div");
+        box.append(cogwheel);
+        cogwheel.textContent = "✱";
+        cogwheel.className =
+          "cursor-pointer select-none flex text-[10px] md:text-[15px] lg:text-[20px] justify-center z-30 left-0 top-0 absolute lg:max-h-6 md:max-h-4.5 max-h-3 lg:w-6 md:w-4.5 w-3";
 
-      // Create a handle
-      var handle = document.createElement("i");
-      handle.className = "z-20 right-0 handle h-full lg:w-5 md:w-4 w-3 absolute items-center justify-center cursor-move flex";
-      handle.innerHTML = `
-        <svg viewBox="0 0 60 120">
-          <path d="M 10 90 L 30 110 L 50 90 Z" stroke-width="5" stroke-linejoin="round" style="stroke:black; fill:black"></path>
-          <path d="M 10 30 L 30 10 L 50 30 Z" stroke-width="5" stroke-linejoin="round" style="stroke:black; fill:black"></path>
-          <circle cx="30" cy="60" r="12" style="stroke:black; fill:black"></circle>
-        </svg>`;
-      box.append(handle);
+        let opts = {
+          backgroundColor: "#333",
+          previewElement: "#" + box.id,
+          value: tierColor,
+        };
+        let picker = new JSColor(cogwheel, opts);
 
-      // Create a color picker
-      var cogwheel = document.createElement("div");
-      box.append(cogwheel);
-      cogwheel.outerHTML = `
-        <div class="z-30 right-0 bottom-0 absolute lg:h-5 md:h-4 h-3 lg:w-5 md:w-4 w-3 flex" data-jscolor="{previewElement:'#`+ box.id + `',format: 'rgb',value:'` + tierColor + `'}">
-          <svg class="pointer-events-none" viewBox="0 0 120 120">
-            <line x1="60" y1="30" x2="60" y2="90" transform="rotate(0,60,60)" stroke-linecap="round" style="stroke:black;stroke-width:18"/>
-            <line x1="60" y1="30" x2="60" y2="90" transform="rotate(60,60,60)" stroke-linecap="round" style="stroke:black;stroke-width:18"/>
-            <line x1="60" y1="30" x2="60" y2="90" transform="rotate(120,60,60)" stroke-linecap="round" style="stroke:black;stroke-width:18"/>
-          </svg>
-        </div>
-        `;
+        // Make the list sortable using SortableJS
+        Sortable.create(list, {
+          animation: 150,
+          group: "item",
+        });
+        return box;
+      }
 
-      // Append elements to the container
-      box.append(header);
-      box.append(list);
-      container.append(box);
+      var addButton = document.getElementById("add-tier");
+      addButton.textContent = "+";
+      addButton.className =
+        "text-[16px] md:text-[24px] lg:text-[32px] cursor-pointer select-none justify-center items-center bg-gray-600 flex lg:min-h-[64px] md:min-h-[48px] min-h-[32px]";
+      addButton.onclick = function () {
+        createTier();
+      };
 
-      // Make the list sortable using SortableJS
-      Sortable.create(list, {
+      // Make the tiers sortable using SortableJS
+      Sortable.create(container, {
+        animation: 150,
+        group: "tier",
+        handle: ".handle",
+        direction: "horizontal",
+      });
+
+      fetch("https://ddragon.leagueoflegends.com/api/versions.json")
+        .then((res) => res.json())
+        .then((data) => {
+          let version = data[0];
+          fetch(
+            "https://ddragon.leagueoflegends.com/cdn/" +
+              version +
+              "/data/en_US/champion.json",
+          )
+            .then((res) => res.json())
+            .then((data) => {
+              for (champ of Object.keys(data.data).map(
+                (key) => data.data[key].id,
+              )) {
+                var item = document.createElement("img");
+                item.className =
+                  "flex lg:max-w-[128px] md:max-w-[96px] max-w-[64px] z-10 cursor-move";
+                item.src =
+                  "https://ddragon.leagueoflegends.com/cdn/" +
+                  version +
+                  "/img/champion/" +
+                  champ +
+                  ".png";
+                itemContainer.append(item);
+              }
+            });
+        });
+
+      Sortable.create(itemContainer, {
         animation: 150,
         group: "item",
       });
-    }
-    // Make the tiers sortable using SortableJS
-    Sortable.create(container, {
-      animation: 150,
-      group: "tier",
-      handle: ".handle",
-      direction: "horizontal",
-    });
-
-    var champs = document.createElement("div");
-    champs.className = "flex flex-row grow flex-wrap content-start justify-center min-h-[128px]";
-
-    fetch('https://ddragon.leagueoflegends.com/api/versions.json')
-      .then((res) => res.json())
-      .then((data) => {
-        let version = data[0];
-        fetch('https://ddragon.leagueoflegends.com/cdn/' + version + '/data/en_US/champion.json')
-          .then((res) => res.json())
-          .then((data) => {
-            for (champ of (Object.keys(data.data).map((key) => data.data[key].id))) {
-              var item = document.createElement("img");
-              item.className = "flex lg:max-w-[128px] md:max-w-[96px] max-w-[64px] z-10 cursor-move";
-              item.src = "https://ddragon.leagueoflegends.com/cdn/" + version + "/img/champion/" + champ + ".png"
-              champs.append(item);
-            }
-          });
-      })
-    itemContainer.append(champs)
-
-    Sortable.create(champs, {
-      animation: 150,
-      group: "item",
-    });
-
-  </script>
-
-</body>
-
+    </script>
+  </body>
 </html>
