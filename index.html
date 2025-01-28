@@ -3,7 +3,7 @@
   <head>
     <meta charset="UTF-8" />
     <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-    <script src="https://unpkg.com/@tailwindcss/browser@4"></script>
+    <link href="./output.css" rel="stylesheet" />
     <script src="https://cdnjs.cloudflare.com/ajax/libs/Sortable/1.15.0/Sortable.min.js"></script>
     <script src="https://cdnjs.cloudflare.com/ajax/libs/html2canvas/1.4.1/html2canvas.min.js"></script>
     <script src="https://cdnjs.cloudflare.com/ajax/libs/jscolor/2.5.2/jscolor.min.js"></script>
@@ -16,7 +16,7 @@
     <style type="text/css">
       @layer base {
         img {
-          @apply inline-block;
+          @apply iiiiiiiiiiiiiiinline-block;
         }
         body {
           font-family: Gabarito;
@@ -25,12 +25,12 @@
     </style>
   </head>
 
-  <body id="body" class="flex h-screen flex-col dark:bg-gray-800">
+  <body id="body" class="p-8 flex h-screen flex-col dark:bg-gray-800">
     <div id="tier-list"></div>
     <div id="add-tier"></div>
     <div
       id="item-list"
-      class="flex min-h-16 grow flex-wrap justify-center md:min-h-[128px] lg:min-h-32"
+      class="flex min-h-[64px] grow flex-wrap justify-center md:min-h-[96px] lg:min-h-[128px]"
     ></div>
 
     <script>
@@ -74,13 +74,13 @@
 
         // Create a header element for the tier name
         var header = document.createElement("div");
-        header.className = "flex flex-none lg:w-[128px] md:w-[96px] w-[64px]]";
+        header.className = "m-0.5 flex flex-none lg:w-[128px] md:w-[96px] w-[64px]]";
         box.append(header);
 
         var headerText = document.createElement("div");
         headerText.textContent = tierName;
         headerText.className =
-          "lg:text-2xl md:text-lg text-xs flex lg:w-[128px] md:w-[96px] w-[64px] text-center items-center justify-center";
+          "lg:text-2xl md:text-lg text-xs flex grow text-center items-center justify-center";
         headerText.contentEditable = "True";
         header.append(headerText);
 
@@ -88,21 +88,21 @@
         var list = document.createElement("div");
         box.append(list);
         list.className =
-          "flex flex-row grow flex-wrap content-start lg:min-h-[128px] md:min-h-[96px] min-h-[64px] bg-[#0000003f]";
+          "m-0.5 flex flex-row grow flex-wrap content-start lg:min-h-[128px] md:min-h-[96px] min-h-[64px] bg-[#0000003f]";
 
         // Create a handle
         var handle = document.createElement("div");
-        handle.textContent = "🢁\n🢃";
+        handle.textContent = "⥮";
         handle.className =
-          "text-[10px] md:text-[15px] lg:text-[20px] text-center z-20 left-0 handle h-full lg:w-6 md:w-4.5 w-3 absolute items-center justify-center cursor-move flex";
+          "opacity-0 hover:opacity-100 text-[16px] md:text-[24px] lg:text-[32px] text-center z-20 left-0 handle h-full lg:w-6 md:w-4.5 w-3 absolute items-center justify-center cursor-row-resize flex";
         box.append(handle);
 
         // Create a remove button
         var remove = document.createElement("div");
-        box.append(remove);
+        handle.append(remove);
         remove.textContent = "-";
         remove.className =
-          "cursor-not-allowed select-none flex text-[16px] md:text-[24px] lg:text-[32px] items-center justify-center z-30 left-0 bottom-0 absolute lg:max-h-6 md:max-h-4.5 max-h-3 lg:w-6 md:w-4.5 w-3";
+          "cursor-pointer select-none flex text-[16px] md:text-[24px] lg:text-[32px] items-center justify-center z-30 left-0 bottom-0 absolute lg:max-h-6 md:max-h-4.5 max-h-3 lg:w-6 md:w-4.5 w-3";
 
         remove.onclick = function(){
           while(list.hasChildNodes()){
@@ -113,7 +113,7 @@
         
         // Create a color picker
         var cogwheel = document.createElement("div");
-        box.append(cogwheel);
+        handle.append(cogwheel);
         cogwheel.textContent = "✱";
         cogwheel.className =
           "cursor-pointer select-none flex text-[10px] md:text-[15px] lg:text-[20px] justify-center z-30 left-0 top-0 absolute lg:max-h-6 md:max-h-4.5 max-h-3 lg:w-6 md:w-4.5 w-3";
@@ -136,7 +136,7 @@
       var addButton = document.getElementById("add-tier");
       addButton.textContent = "+";
       addButton.className =
-        "text-[16px] md:text-[24px] lg:text-[32px] cursor-pointer select-none justify-center items-center bg-gray-600 flex lg:min-h-[64px] md:min-h-[48px] min-h-[32px]";
+        "mx-[25%] my-2 text-[16px] md:text-[24px] lg:text-[32px] cursor-cell select-none justify-center items-center bg-gray-600 flex";
       addButton.onclick = function () {
         createTier();
       };
