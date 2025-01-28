@@ -26,17 +26,17 @@
   </head>
 
   <body class="flex h-max flex-col p-4 dark:bg-gray-800">
-    <div id="tier-list" class="bg-gray-900 p-2"></div>
+    <div id="tier-list" class="bg-gray-900 p-1"></div>
     <div class="flex flex-row px-[10%]">
       <div
         id="add-tier"
-        class="m-1 flex-auto cursor-pointer content-center border-[0.25rem] border-gray-900 bg-gray-600 text-center text-[16px] md:text-[24px] lg:text-[32px]"
+        class="m-2 flex-auto cursor-pointer content-center border-[0.25rem] border-gray-900 bg-gray-600 text-center text-[16px] md:text-[24px] lg:text-[32px]"
       >
         +
       </div>
       <div
         id="screenshot"
-        class="m-1 flex-auto cursor-pointer content-center border-[0.25rem] border-gray-900 bg-gray-600 text-center text-[16px] md:text-[24px] lg:text-[32px]"
+        class="m-2 flex-auto cursor-pointer content-center border-[0.25rem] border-gray-900 bg-gray-600 text-center text-[16px] md:text-[24px] lg:text-[32px]"
       >
         [◉°]
       </div>
@@ -82,13 +82,13 @@
         // Create a box to put elements into
         let box = document.createElement("div");
         container.append(box);
-        box.className = "group relative flex flex-row";
+        box.className = "m-2 group relative flex flex-row";
         box.id = generateID("box-id-");
 
         // Create a header element for the tier name
         let header = document.createElement("div");
         header.className =
-          "m-0.5 flex flex-none lg:w-[128px] md:w-[96px] w-[64px]";
+          "flex flex-none lg:w-[128px] md:w-[96px] w-[64px]";
         box.append(header);
 
         let headerText = document.createElement("div");
@@ -102,7 +102,7 @@
         let list = document.createElement("div");
         box.append(list);
         list.className =
-          "m-0.5 flex flex-row grow flex-wrap content-start lg:min-h-[128px] md:min-h-[96px] min-h-[64px] bg-[#0000003f]";
+          "flex flex-row grow flex-wrap content-start lg:min-h-[128px] md:min-h-[96px] min-h-[64px] bg-[#0000003f]";
 
         // Create a handle
         let handle = document.createElement("div");
