@@ -1,0 +1,221 @@
+<!doctype html>
+<html>
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <script src="https://unpkg.com/@tailwindcss/browser@4"></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/Sortable/1.15.0/Sortable.min.js"></script>
+    <script src=" https://cdn.jsdelivr.net/npm/html2canvas-pro@1.5.8/dist/html2canvas-pro.min.js"></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/jscolor/2.5.2/jscolor.min.js"></script>
+    <link rel="preconnect" href="https://fonts.googleapis.com" />
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+    <link
+      href="https://fonts.googleapis.com/css2?family=Gabarito:wght@400..900&family=Zain:ital,wght@0,200;0,300;0,400;0,700;0,800;0,900;1,300;1,400&display=swap"
+      rel="stylesheet"
+    />
+    <style type="text/css">
+      @layer base {
+        img {
+          @apply iiiiiiiiiiiiiiinline-block;
+        }
+        body {
+          font-family: Gabarito;
+        }
+      }
+    </style>
+  </head>
+
+  <body class="flex h-max flex-col p-4 dark:bg-gray-800">
+    <div id="tier-list" class="bg-gray-900 p-1"></div>
+    <div class="flex flex-row px-[10%]">
+      <div
+        id="add-tier"
+        class="m-2 flex-auto cursor-pointer content-center border-[0.25rem] border-gray-900 bg-gray-600 text-center text-[16px] md:text-[24px] lg:text-[32px]"
+      >
+        +
+      </div>
+      <div
+        id="screenshot"
+        class="m-2 flex-auto cursor-pointer content-center border-[0.25rem] border-gray-900 bg-gray-600 text-center text-[16px] md:text-[24px] lg:text-[32px]"
+      >
+        [◉°]
+      </div>
+    </div>
+    <div
+      id="item-list"
+      class="flex min-h-[64px] flex-wrap justify-center bg-gray-900 p-2 md:min-h-[96px] lg:min-h-[128px]"
+    ></div>
+
+    <script>
+      function setWidth(thediv, size) {
+        thediv.style.width = Math.floor(window.innerWidth / size) * size + "px";
+      }
+
+      // Create a global ID counter so every element has unique ID
+      let generateID = (function () {
+        let globalIdCounter = 0;
+        return function (baseStr) {
+          return baseStr + globalIdCounter++;
+        };
+      })();
+
+      // Create an array of pre-made tiers to be sorted
+      let tiers = [
+        ["S", "#BF7FFF"],
+        ["A", "#00BFFF"],
+        ["B", "#7FFF3F"],
+        ["C", "#FFFF3F"],
+        ["D", "#FF4F4F"],
+      ];
+
+      // Get the container element for the tier list
+      let container = document.getElementById("tier-list");
+      let itemContainer = document.getElementById("item-list");
+
+      // Create the pre-made tiers from the array
+      for (tier of tiers) {
+        createTier(tier[0], tier[1]);
+      }
+
+      // Create a function to create tiers
+      function createTier(tierName = "New Tier", tierColor = "#d0d0ff") {
+        // Create a box to put elements into
+        let box = document.createElement("div");
+        container.append(box);
+        box.className = "m-2 group relative flex flex-row";
+        box.id = generateID("box-id-");
+
+        // Create a header element for the tier name
+        let header = document.createElement("div");
+        header.className =
+          "flex flex-none lg:w-[128px] md:w-[96px] w-[64px]";
+        box.append(header);
+
+        let headerText = document.createElement("div");
+        header.append(headerText);
+        headerText.textContent = tierName;
+        headerText.className =
+          "lg:text-2xl md:text-lg text-xs max-w-[64px] md:max-w-[96px] lg:max-w-[128px] flex grow text-center items-center justify-center";
+        headerText.contentEditable = "True";
+
+        // Create box where items can be dragged
+        let list = document.createElement("div");
+        box.append(list);
+        list.className =
+          "flex flex-row grow flex-wrap content-start lg:min-h-[128px] md:min-h-[96px] min-h-[64px] bg-[#0000003f]";
+
+        // Create a handle
+        let handle = document.createElement("div");
+        header.append(handle);
+        handle.textContent = "⥮";
+        handle.className =
+          "opacity-0 group-hover:opacity-100 text-[16px] md:text-[24px] lg:text-[32px] text-center z-20 top-0 h-full lg:w-6 md:w-4.5 w-3 absolute items-center justify-center cursor-row-resize flex";
+
+        // Create a remove button
+        let remove = document.createElement("div");
+        handle.append(remove);
+        remove.textContent = "-";
+        remove.className =
+          "cursor-pointer select-none flex text-[16px] md:text-[24px] lg:text-[32px] items-center justify-center z-30 bottom-0 absolute lg:max-h-6 md:max-h-4.5 max-h-3 lg:w-6 md:w-4.5 w-3";
+
+        remove.onclick = function () {
+          while (list.hasChildNodes()) {
+            itemContainer.append(list.firstChild);
+          }
+          box.remove();
+        };
+
+        // Create a color picker
+        let cogwheel = document.createElement("div");
+        handle.append(cogwheel);
+        cogwheel.textContent = "✱";
+        cogwheel.className =
+          "cursor-pointer select-none flex text-[10px] md:text-[15px] lg:text-[20px] justify-center z-30 top-0 absolute lg:max-h-6 md:max-h-4.5 max-h-3 lg:w-6 md:w-4.5 w-3";
+
+        let opts = {
+          backgroundColor: "#333",
+          previewElement: "#" + box.id,
+          value: tierColor,
+        };
+        let picker = new JSColor(cogwheel, opts);
+
+        // Make the list sortable using SortableJS
+        Sortable.create(list, {
+          animation: 150,
+          group: "item",
+        });
+        return box;
+      }
+
+      let addButton = document.getElementById("add-tier");
+      addButton.onclick = function () {
+        createTier();
+      };
+
+      let copyTier = document.getElementById("screenshot");
+      copyTier.onclick = function () {
+        html2canvas(document.getElementById("tier-list")).then(
+          function (canvas) {
+            canvas.toBlob((blob) =>
+              navigator.clipboard.write([
+                new ClipboardItem({ "image/png": blob }),
+              ]),
+            );
+          },
+        );
+      };
+
+      // Make the tiers sortable using SortableJS
+      Sortable.create(container, {
+        animation: 150,
+        group: "tier",
+        direction: "horizontal",
+      });
+
+      fetch("https://ddragon.leagueoflegends.com/api/versions.json")
+        .then((res) => res.json())
+        .then((data) => {
+          let version = data[0];
+          fetch(
+            "https://ddragon.leagueoflegends.com/cdn/" +
+              version +
+              "/data/en_US/champion.json",
+          )
+            .then((res) => res.json())
+            .then((data) => {
+              for (champ of Object.keys(data.data).map(
+                (key) => data.data[key].id,
+              )) {
+                let item = document.createElement("img");
+                item.className =
+                  "flex lg:max-w-[128px] md:max-w-[96px] max-w-[64px] z-10 cursor-move";
+                let tempurl =
+                  "https://ddragon.leagueoflegends.com/cdn/" +
+                  version +
+                  "/img/champion/" +
+                  champ +
+                  ".png";
+                displayBlobImage(tempurl, item);
+                itemContainer.append(item);
+              }
+            });
+        });
+
+      Sortable.create(itemContainer, {
+        animation: 150,
+        group: "item",
+      });
+
+      async function fetchImage(url) {
+        const response = await fetch(url);
+        const blob = await response.blob();
+        return blob;
+      }
+      async function displayBlobImage(url, imgElement) {
+        const imageBlob = await fetchImage(url);
+        const imageObjectURL = URL.createObjectURL(imageBlob);
+        imgElement.src = imageObjectURL;
+      }
+    </script>
+  </body>
+</html>
